@@ -1,0 +1,15 @@
+<%- include('../partials/page-start', { title: 'Meal timings', active: 'meals', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'SERVICE SETTINGS', heading: 'Your kitchen. Your timings.', description: 'Scans are matched automatically to the active meal using server time.', actions: '' }) %>
+<section class="panel form-panel"><h2>Daily meal windows</h2><p>Asia/Kolkata (IST). Windows must stay within one day and cannot overlap.</p>
+<form method="post"><%- include('../partials/csrf') %>
+<div class="table-wrap"><table><thead><tr><th>Meal</th><th>Start</th><th>End</th><th>Include exact end second</th><th>Active</th></tr></thead>
+<tbody>
+<%_ for (const m of meals) { _%>
+<tr><td><strong><%= m.meal_name %></strong></td><td><input aria-label="<%= m.meal_name %> start" type="time" step="1" name="start[<%= m.id %>]" value="<%= m.start_time %>" required></td><td><input aria-label="<%= m.meal_name %> end" type="time" step="1" name="end[<%= m.id %>]" value="<%= m.end_time %>" required></td><td><input aria-label="Include <%= m.meal_name %> end second" type="checkbox" name="inclusive[<%= m.id %>]" <%= Number(m.end_inclusive) ? 'checked' : '' %>></td><td><input aria-label="<%= m.meal_name %> active" type="checkbox" name="active[<%= m.id %>]" <%= Number(m.status) ? 'checked' : '' %>></td></tr>
+<%_ } _%>
+</tbody></table></div>
+<p class="report-note">Breakfast excludes 11:00:00. Lunch includes exactly 15:00:00; dinner includes exactly 23:30:00 by default. Adjust the boundary checkbox if your policy changes.</p>
+<button class="button primary">Save meal timings</button>
+</form></section>
+<%- include('../partials/page-end') %>

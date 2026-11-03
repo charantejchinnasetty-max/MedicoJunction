@@ -1,0 +1,13 @@
+<%- include('../partials/page-start', { title: 'Settings', active: 'settings', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'COMPANY SETTINGS', heading: 'Make it yours.', description: 'Manage your company identity and counter QR refresh period.', actions: '' }) %>
+<section class="panel form-panel"><form method="post" enctype="multipart/form-data"><%- include('../partials/csrf') %>
+<div class="form-grid">
+<label>Company name<input name="company_name" required maxlength="100" value="<%= settings.company_name || '' %>"></label>
+<label>QR validity (seconds)<input type="number" min="30" max="60" required name="qr_ttl" value="<%= settings.qr_ttl || '' %>"></label>
+<label>Timezone<input value="Asia/Kolkata · Indian Standard Time" readonly></label>
+<label>Company logo<input type="file" name="logo" accept="image/png,image/jpeg"><small>JPG / PNG · max 2 MB. Leave blank to retain the current logo.</small></label>
+</div>
+<button class="button primary">Save settings</button>
+</form></section>
+<%- include('../partials/page-end') %>

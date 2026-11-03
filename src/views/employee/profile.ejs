@@ -1,0 +1,14 @@
+<%- include('../partials/page-start', { title: 'My profile', active: 'profile', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'YOUR PROFILE', heading: 'The person behind the plate.', description: user.employee_name + ' · ' + user.employee_code, actions: '' }) %>
+<section class="panel form-panel"><form method="post" enctype="multipart/form-data"><%- include('../partials/csrf') %>
+<div class="form-grid">
+<label>Department<input readonly value="<%= user.department ?? '' %>"></label>
+<label>Designation<input readonly value="<%= user.designation ?? '' %>"></label>
+<label>Mobile number<input readonly type="tel" value="<%= user.mobile ?? '' %>"></label>
+<label>Profile photo<input type="file" name="photo" accept="image/png,image/jpeg"><small>JPG or PNG, up to 2 MB.</small></label>
+<p class="wide">Your mobile number is your login username. Contact your administrator to update it. The company uses a common employee password.</p>
+</div>
+<button class="button primary">Save profile</button>
+</form></section>
+<%- include('../partials/page-end') %>

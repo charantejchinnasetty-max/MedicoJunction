@@ -1,0 +1,38 @@
+{
+  "name": "medico-junction",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Medico Junction meal attendance — Node.js/Express backend with the original frontend",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --watch src --ext js,ejs src/server.js",
+    "migrate": "node scripts/migrate.js",
+    "create-admin": "node scripts/create-admin.js",
+    "set-employee-password": "node scripts/set-employee-password.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^18.0.9",
+    "ejs": "^7.0.2",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.3",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "multer": "^2.5.0",
+    "mysql2": "^3.24.6",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "nodemon": "^3.1.14"
+  },
+  "license": "UNLICENSED"
+}

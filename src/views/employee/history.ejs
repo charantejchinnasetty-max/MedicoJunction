@@ -1,0 +1,14 @@
+<%# Locals: f, counts, days (array of { date, entries }) -%>
+<%- include('../partials/page-start', { title: 'My meal history', active: 'history', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'YOUR MEAL HISTORY', heading: 'The meals that made your month.', description: 'Your attendance, available whenever you need it.', actions: '' }) %>
+<%- include('../partials/notice', { error: filterError }) %>
+<%- include('../partials/filter-form', { admin: false, view: '' }) %>
+<%- include('../partials/cards', { counts, employees: null }) %>
+<section class="panel"><div class="panel-heading"><h2>Day by day</h2></div><div class="table-wrap compact"><table><thead><tr><th>Date</th><%_ for (const m of meals) { _%><th><%= m.meal_name %></th><%_ } _%><th>Total</th></tr></thead>
+<tbody>
+<%_ for (const day of days) { _%>
+<tr><td><%= fmt(day.date, 'd M Y') %></td><%_ for (const m of meals) { const r = day.entries[m.id]; _%><td><%- r ? '<span class="pill green">✓ Taken</span><small class="source">' + (r.scan_timestamp ? fmt(r.scan_timestamp, 'g:i A') : 'Time unavailable') + '</small>' : '<span class="muted">—</span>' %></td><%_ } _%><td><%= Object.keys(day.entries).length %></td></tr>
+<%_ } _%>
+</tbody></table></div></section>
+<%- include('../partials/page-end') %>

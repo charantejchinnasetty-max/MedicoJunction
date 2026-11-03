@@ -1,0 +1,16 @@
+<%# Locals: service, takenCount, byMeal, counts, photoOk -%>
+<%- include('../partials/page-start', { title: 'My dashboard', active: 'dashboard', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'YOUR DAILY TABLE', heading: 'Hello, ' + user.employee_name + '.', description: 'A good meal is waiting. Make a little time for yourself.', actions: '<a class="button primary scan-button" href="scan">' + icon('qr') + ' Scan meal QR</a>' }) %>
+<section class="service-banner"><div><span class="live-dot"></span><strong><%= service.message %></strong><small><%= fmt(now(), 'd F Y · h:i A') %> IST</small></div></section>
+<section class="panel meal-today"><div class="panel-heading"><div><h2>Today’s meals</h2><p>A small ritual. A better day.</p></div><span class="pill green"><%= takenCount %> / <%= meals.length %> meals</span></div>
+<div class="today-grid">
+<%_ for (const m of meals) { const a = byMeal[m.id]; _%>
+<div class="today-meal <%= a ? 'taken' : '' %>"><span class="meal-symbol"><%- icon(a ? 'check' : 'clock') %></span><h3><%= m.meal_name %></h3><p><%= fmt(m.start_time, 'g:i A') %> – <%= fmt(m.end_time, 'g:i A') %></p><strong><%= a ? 'Taken' + (a.scan_timestamp ? ' · ' + fmt(a.scan_timestamp, 'g:i A') : ' · recorded manually') : (Number(m.status) ? 'Not taken' : 'Service inactive') %></strong></div>
+<%_ } _%>
+</div></section>
+<div class="dashboard-grid">
+<section class="panel form-panel"><div class="eyebrow">THIS MONTH</div><h2>Your meals at a glance</h2><%- include('../partials/cards', { counts, employees: null }) %><a class="text-link" href="history">Explore your meal history →</a></section>
+<section class="panel form-panel"><h2>Your profile</h2><div class="profile-card"><%_ if (photoOk) { _%><img class="profile-photo" src="<%= base %>/<%= user.photo %>" alt="Your profile photo"><%_ } else { _%><span class="avatar large"><%= initial(user.employee_name) %></span><%_ } _%><h3><%= user.employee_name %></h3><p><%= user.employee_code %> · <%= user.department %></p><a href="profile" class="button">View profile</a></div></section>
+</div>
+<%- include('../partials/page-end') %>

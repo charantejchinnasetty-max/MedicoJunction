@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.*
+!.env.example
+assets/uploads/*
+!assets/uploads/.gitkeep
+npm-debug.log*
+coverage/
+storage/*
+!storage/.gitkeep

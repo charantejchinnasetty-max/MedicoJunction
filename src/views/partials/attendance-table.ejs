@@ -1,0 +1,13 @@
+<%# PHP attendanceTable($records, $correct, $offset). Locals: records, correct, offset -%>
+<%_ const canCorrect = typeof correct !== 'undefined' && correct; const start = typeof offset === 'number' ? offset : 0; _%>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Employee</th><th>Department</th><th>Date</th><th>Meal</th><th>Scan time · IST</th><th>Status</th><%- canCorrect ? '<th>Action</th>' : '' %></tr></thead>
+<tbody>
+<%_ if (!records.length) { _%>
+<tr><td colspan="8"><div class="empty"><%- icon('attendance') %><h3>No meal attendance recorded for this date.</h3><p>Try another date range or clear your filters.</p></div></td></tr>
+<%_ } _%>
+<%_ records.forEach((r, i) => { _%>
+<tr><td class="muted"><%= start + i + 1 %></td><td><div class="person"><span class="avatar small"><%= initial(r.employee_name) %></span><div><strong><%= r.employee_name %></strong><small><%= r.employee_code %></small></div></div></td><td><%= r.department %></td><td><%= fmt(r.meal_date, 'd M Y') %></td><td><span class="pill meal-<%= Number(r.meal_type_id) %>"><%= r.meal_name %></span></td><td><%- r.scan_timestamp ? fmt(r.scan_timestamp, 'h:i:s A') : '<span class="muted">Not available</span>' %><small class="source"><%= ucfirst(r.source) %></small></td><td><span class="valid-dot"></span> Valid</td><%_ if (canCorrect) { _%><td><a class="text-link" href="?correct=<%= Number(r.id) %>">Correct</a></td><%_ } _%></tr>
+<%_ }) _%>
+</tbody>
+</table></div>

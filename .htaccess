@@ -1,4 +1,0 @@
-Options -Indexes
-<FilesMatch "\.(sql|key|log|md|json|py|ps1)$">
-    Require all denied
-</FilesMatch>

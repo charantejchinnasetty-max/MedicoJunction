@@ -1,0 +1,38 @@
+<%#
+  PHP filterForm($f, $admin, $view). Locals: f, meals, admin, view, employeeOptions, departmentOptions
+-%>
+<%_ const presets = [['today', 'Today'], ['yesterday', 'Yesterday'], ['week', 'This week'], ['month', 'This month'], ['previous', 'Previous month'], ['custom', 'Custom range']]; _%>
+<form method="get" class="filter-panel">
+<div class="filter-grid">
+<label>Period<select name="preset" id="period">
+<%_ for (const [k, v] of presets) { _%>
+<option value="<%= k %>" <%= f.preset === k ? 'selected' : '' %>><%= v %></option>
+<%_ } _%>
+</select></label>
+<label>From<input type="date" name="from" value="<%= f.from %>"></label>
+<label>To<input type="date" name="to" value="<%= f.to %>"></label>
+<label>Meal<select name="meal"><option value="0">All meals</option>
+<%_ for (const m of meals) { _%>
+<option value="<%= m.id %>" <%= f.meal == m.id ? 'selected' : '' %>><%= m.meal_name %></option>
+<%_ } _%>
+</select></label>
+<%_ if (admin) { _%>
+<label>Employee<select name="employee"><option value="0">All employees</option>
+<%_ for (const r of employeeOptions) { _%>
+<option value="<%= r.id %>" <%= f.employee == r.id ? 'selected' : '' %>><%= r.employee_name + ' · ' + r.employee_code %></option>
+<%_ } _%>
+</select></label>
+<label>Department<select name="department"><option value="0">All departments</option>
+<%_ for (const r of departmentOptions) { _%>
+<option value="<%= r.id %>" <%= f.department == r.id ? 'selected' : '' %>><%= r.department_name %></option>
+<%_ } _%>
+</select></label>
+<label class="search-label">Search<input name="q" placeholder="Name or employee ID" value="<%= f.q %>"></label>
+<%_ } _%>
+<%_ if (view) { _%>
+<input type="hidden" name="view" value="<%= view %>">
+<%_ } _%>
+<button class="button primary filter-submit">Apply filters</button>
+</div>
+<div class="filter-foot">Showing <%= fmt(f.from, 'd M Y') %> – <%= fmt(f.to, 'd M Y') %> <a href="?">Reset filters</a></div>
+</form>

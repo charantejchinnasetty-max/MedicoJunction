@@ -1,0 +1,39 @@
+<%#
+  Locals: f, meals, employeeOptions, departmentOptions, counts, count, page, pages, rows, sort, dir,
+          query (current GET params), form (null or { id, record, values }), today
+-%>
+<%- include('../partials/page-start', { title: 'Attendance', active: 'attendance', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'ATTENDANCE', heading: 'Every meal, accounted for.', description: 'Verified scans and recorded corrections in one reliable register.', actions: '<a class="button" href="reports?' + e(qs({ ...f, view: 'detail' })) + '">' + icon('reports') + ' Export / print</a><a class="button primary" href="?correct=new">+ Add missed meal</a>' }) %>
+<%_ if (form) { const r = form.record; const v = form.values; _%>
+<section class="panel form-panel"><h2><%= r ? 'Correct attendance #' + form.id : 'Add missed attendance' %></h2><p>Every change requires a reason and is permanently logged. Removing attendance voids the entry and preserves its history.</p>
+<form method="post"><%- include('../partials/csrf') %><input type="hidden" name="id" value="<%= form.id %>">
+<div class="form-grid">
+<label>Employee<select name="employee_id" required>
+<%_ for (const emp of employeeOptions) { _%>
+<option value="<%= emp.id %>" <%= String(r ? r.employee_id : (v.employee_id ?? '')) == String(emp.id) ? 'selected' : '' %>><%= emp.employee_name + ' · ' + emp.employee_code %></option>
+<%_ } _%>
+</select></label>
+<label>Meal<select name="meal_type_id">
+<%_ for (const m of meals) { _%>
+<option value="<%= m.id %>" <%= String(r ? r.meal_type_id : '') == String(m.id) ? 'selected' : '' %>><%= m.meal_name %></option>
+<%_ } _%>
+</select></label>
+<label>Date<input type="date" name="meal_date" required max="<%= today %>" value="<%= r ? r.meal_date : (v.meal_date ?? today) %>"></label>
+<label>Action<select name="action"><option value="save"><%= r ? 'Save correction / restore' : 'Add attendance' %></option><%- r ? '<option value="void">Remove invalid attendance (void)</option>' : '' %></select></label>
+<label class="wide">Reason for modification<textarea name="reason" required minlength="8" maxlength="500" placeholder="Explain why this correction is necessary"><%= v.reason ?? '' %></textarea></label>
+</div>
+<div class="actions"><button class="button primary" data-confirm="Save this attendance correction and its audit trail?">Save correction</button><a class="button" href="attendance">Cancel</a></div>
+</form></section>
+<%_ } _%>
+<%- include('../partials/filter-form', { admin: true, view: '' }) %>
+<%- include('../partials/cards', { counts, employees: null }) %>
+<section class="panel"><div class="panel-heading"><div><h2>Meal register</h2><p><%= count %> records · showing up to 25 per page</p></div><details class="sort-menu"><summary>Sort records</summary>
+<%_ for (const [k, label] of [['date', 'Date'], ['employee', 'Employee'], ['code', 'Employee ID'], ['meal', 'Meal'], ['time', 'Scan time']]) { _%>
+<a href="?<%= qs({ ...query, sort: k, dir: sort === k && dir === 'asc' ? 'desc' : 'asc', page: 1 }) %>"><%= label %></a>
+<%_ } _%>
+</details></div>
+<%- include('../partials/attendance-table', { records: rows, correct: true, offset: (page - 1) * 25 }) %>
+<div class="pagination"><span>Page <%= page %> of <%= pages %></span><div><%_ if (page > 1) { _%><a class="button" href="?<%= qs({ ...query, page: page - 1 }) %>">Previous</a><%_ } _%><%_ if (page < pages) { _%><a class="button" href="?<%= qs({ ...query, page: page + 1 }) %>">Next</a><%_ } _%></div></div>
+</section>
+<%- include('../partials/page-end') %>
