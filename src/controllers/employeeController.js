@@ -79,7 +79,7 @@ async function profileAction(req, res) {
   try {
     await updateOwnPhoto(req);
     flash(req, 'Your profile has been updated.');
-    res.redirect(url('/employee/profile.php'));
+    res.redirect(url('/employee/profile'));
   } catch (err) {
     if (!(err instanceof ValidationError)) throw err;
     await profile(req, res, { error: err.message });

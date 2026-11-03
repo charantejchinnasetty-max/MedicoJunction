@@ -3,8 +3,8 @@
 Employee meal attendance with a rotating counter QR code, manual corrections with an audit
 trail, monthly meal rates, reports and CSV exports.
 
-The application runs on **Node.js + Express + MySQL**. The pages, styling, scripts and URLs
-are the same as the original PHP version — see [MIGRATION.md](MIGRATION.md) for how each PHP
+The application runs on **Node.js + Express + MySQL**. The pages, styling and scripts are the
+same as the original PHP version; addresses no longer end in `.php` — see [MIGRATION.md](MIGRATION.md) for how each PHP
 file maps to the Node.js code.
 
 ## Requirements
@@ -40,7 +40,7 @@ Edit `.env`:
 | `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | MySQL connection. The PHP app used the database `mess_management`. |
 | `SESSION_SECRET` | **Required in production.** Long random string: `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
 | `BASE_URL` | Public address, used in start-up logs |
-| `BASE_PATH` | URL prefix. Empty serves at `/`; set `/mess_management` to keep the exact PHP URLs |
+| `BASE_PATH` | URL prefix. Empty serves at `/`; set `/mess_management` to keep the old prefix |
 | `QR_SECRET` | Optional QR signing key (64 hex chars). If empty, `storage/qr.key` is used |
 | `TRUST_PROXY` | Set to `1` when running behind a reverse proxy that terminates HTTPS |
 | `COOKIE_SECURE` | Secure cookies; defaults to `true` in production |
@@ -142,7 +142,7 @@ src/
   middleware/      security headers, sessions, CSRF, auth, rate limits, uploads, errors
   services/        business rules (meals, QR, attendance, employees, reports, settings…)
   controllers/     request handlers per area
-  routes/          URL map (same .php URLs as before)
+  routes/          URL map (old .php addresses redirect here)
   views/           EJS templates reproducing the original pages
   app.js, server.js
 storage/           qr.key (generated, git-ignored)
@@ -153,10 +153,13 @@ test/              unit and integration tests
 
 | Area | URL |
 |---|---|
-| Login / logout | `/login.php`, `POST /logout.php` |
-| Admin | `/admin/dashboard.php`, `attendance.php`, `employees.php`, `employee-view.php`, `reports.php`, `meal-qr.php`, `meal-settings.php`, `meal_prices.php`, `settings.php`, `audit.php`, `export_report.php`, `export_employees.php` |
-| Employee | `/employee/dashboard.php`, `scan.php`, `history.php`, `profile.php` |
-| API (JSON) | `POST /api/qr-token.php` (admin), `POST /api/scan-meal.php` (employee), `GET /api/dashboard-stats.php`, `GET /api/reports.php` (admin) |
+| Login / logout | `/login`, `POST /logout` |
+| Admin | `/admin/dashboard`, `attendance`, `employees`, `employee-view`, `reports`, `meal-qr`, `meal-settings`, `meal_prices`, `settings`, `audit`, `export_report`, `export_employees` |
+| Employee | `/employee/dashboard`, `scan`, `history`, `profile` |
+| API (JSON) | `POST /api/qr-token` (admin), `POST /api/scan-meal` (employee), `GET /api/dashboard-stats`, `GET /api/reports` (admin) |
+
+Old addresses from the PHP version (for example `/employee/dashboard.php`) redirect
+permanently to the new ones, so existing bookmarks keep working.
 
 API responses use `{ "success", "code", "message", "data" }`; state-changing calls need the
 `X-CSRF-Token` header from the page's `csrf-token` meta tag.

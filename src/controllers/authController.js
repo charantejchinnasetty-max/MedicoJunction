@@ -45,20 +45,20 @@ async function login(req, res) {
   req.session.last_active = Math.floor(Date.now() / 1000);
   if (role === 'admin') await audit(req, 'admin_login');
   await promisify((cb) => req.session.save(cb));
-  res.redirect(url(`/${role}/dashboard.php`));
+  res.redirect(url(`/${role}/dashboard`));
 }
 
 /** PHP logout.php (POST + CSRF only). */
 async function logout(req, res) {
   await promisify((cb) => req.session.destroy(cb));
   res.clearCookie('MJSESSION', { path: url('') || '/', httpOnly: true, sameSite: 'lax', secure: req.secure });
-  res.redirect(url('/login.php'));
+  res.redirect(url('/login'));
 }
 
 /** PHP index.php */
 function home(req, res) {
   const identity = req.session.identity;
-  res.redirect(url(identity ? `/${identity.role === 'admin' ? 'admin' : 'employee'}/dashboard.php` : '/login.php'));
+  res.redirect(url(identity ? `/${identity.role === 'admin' ? 'admin' : 'employee'}/dashboard` : '/login'));
 }
 
 module.exports = { renderLogin, renderLimited, login, logout, home };

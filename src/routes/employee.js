@@ -8,9 +8,9 @@ const { optionalImage } = require('../middleware/upload');
 const router = express.Router();
 router.use(requireEmployee);
 
-router.get('/dashboard.php', employee.dashboard);
-router.get('/scan.php', employee.scan);
-router.get('/history.php', employee.history);
-router.route('/profile.php').get(employee.profile).post(optionalImage('photo'), verifyCsrf, employee.profileAction);
+router.get('/dashboard', employee.dashboard);
+router.get('/scan', employee.scan);
+router.get('/history', employee.history);
+router.route('/profile').get(employee.profile).post(optionalImage('photo'), verifyCsrf, employee.profileAction);
 
 module.exports = router;

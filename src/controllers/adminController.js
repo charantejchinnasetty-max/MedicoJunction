@@ -202,36 +202,36 @@ async function employeesAction(req, res) {
     flash(req, action === 'delete'
       ? 'Employee deleted. Attendance history is preserved. You can restore them from the Deleted filter.'
       : 'Employee restored as inactive. Use Edit to activate their account.');
-    return res.redirect(url(`/admin/employees.php${action === 'restore' ? '?status=0' : ''}`));
+    return res.redirect(url(`/admin/employees${action === 'restore' ? '?status=0' : ''}`));
   }
   if (action !== 'save') throw new ValidationError('Unknown employee action.');
   await employees.saveEmployee(req);
   flash(req, 'Employee saved. Attendance history is preserved.');
-  res.redirect(url('/admin/employees.php'));
+  res.redirect(url('/admin/employees'));
 }
 
 async function attendanceAction(req, res) {
   const date = await attendance.correctAttendance(req);
   flash(req, 'Correction saved with an audit trail.');
-  res.redirect(url(`/admin/attendance.php?preset=custom&from=${date}&to=${date}`));
+  res.redirect(url(`/admin/attendance?preset=custom&from=${date}&to=${date}`));
 }
 
 async function mealSettingsAction(req, res) {
   await meals.saveMealSettings(req);
   flash(req, 'Meal timings updated. New scans use these timings immediately.');
-  res.redirect(url('/admin/meal-settings.php'));
+  res.redirect(url('/admin/meal-settings'));
 }
 
 async function settingsAction(req, res) {
   await settings.saveSettings(req);
   flash(req, 'Company settings saved.');
-  res.redirect(url('/admin/settings.php'));
+  res.redirect(url('/admin/settings'));
 }
 
 async function mealPricesAction(req, res) {
   const month = await prices.saveRates(req);
   flash(req, `Meal rates saved for ${month}.`);
-  res.redirect(url(`/admin/meal_prices.php?month=${encodeURIComponent(month)}`));
+  res.redirect(url(`/admin/meal_prices?month=${encodeURIComponent(month)}`));
 }
 
 module.exports = {

@@ -4,9 +4,9 @@
 <%_ if (!r) { _%>
 <%- include('../partials/notice', { error: 'Employee not found.' }) %>
 <%_ } else { _%>
-<%- include('../partials/heading', { eyebrow: 'EMPLOYEE PROFILE', heading: r.employee_name, description: r.employee_code + ' · ' + (r.department ?? '') + ' · ' + (r.designation ?? ''), actions: '<a class="button" href="employees.php?edit=' + Number(r.id) + '">Edit profile</a>' }) %>
+<%- include('../partials/heading', { eyebrow: 'EMPLOYEE PROFILE', heading: r.employee_name, description: r.employee_code + ' · ' + (r.department ?? '') + ' · ' + (r.designation ?? ''), actions: '<a class="button" href="employees?edit=' + Number(r.id) + '">Edit profile</a>' }) %>
 <section class="panel form-panel"><h2>Contact & access</h2><p>Mobile: <%= r.mobile || 'Not provided' %></p><p>Status: <%= r.deleted_at ? 'Deleted' : (Number(r.active) ? 'Active' : 'Inactive') %> · <%= r.password_hash ? 'Login ready' : 'Password not yet set' %></p></section>
 <%- include('../partials/cards', { counts, employees: null }) %>
-<a class="button" href="reports.php?employee=<%= Number(r.id) %>&preset=month">Full meal history & reports →</a>
+<a class="button" href="reports?employee=<%= Number(r.id) %>&preset=month">Full meal history & reports →</a>
 <%_ } _%>
 <%- include('../partials/page-end') %>

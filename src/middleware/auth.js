@@ -15,7 +15,7 @@ function requireRole(role) {
       const identity = req.session.identity || {};
       if (identity.role !== role || nowSeconds() - (req.session.last_active || 0) > IDLE_SECONDS) {
         if (isApi(req)) return json(res, false, 'LOGIN_REQUIRED', 'Please log in to continue.', {}, 401);
-        return res.redirect(url('/login.php'));
+        return res.redirect(url('/login'));
       }
       const user = await one(
         role === 'admin'
@@ -26,7 +26,7 @@ function requireRole(role) {
       if (!user || Number(user.session_version) !== Number(identity.version ?? -1)) {
         delete req.session.identity;
         if (isApi(req)) return json(res, false, 'ACCOUNT_UNAVAILABLE', 'Your account is inactive or your password changed. Please log in again.', {}, 403);
-        return res.redirect(url('/login.php'));
+        return res.redirect(url('/login'));
       }
       req.session.last_active = nowSeconds();
       delete user.password;

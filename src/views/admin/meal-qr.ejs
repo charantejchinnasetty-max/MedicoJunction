@@ -1,6 +1,6 @@
 <%# Full-screen counter display (PHP pageStart(..., $full=true)). -%>
 <%- include('../partials/page-start', { title: 'Counter QR', active: 'qr', full: true }) %>
-<header class="counter-header"><a class="brand" href="dashboard.php"><%- include('../partials/logo') %><span><%= settings.company_name || '' %><small>MEALS · CARE · COMMUNITY</small></span></a><button class="button" id="fullscreen">Fullscreen</button></header>
+<header class="counter-header"><a class="brand" href="dashboard"><%- include('../partials/logo') %><span><%= settings.company_name || '' %><small>MEALS · CARE · COMMUNITY</small></span></a><button class="button" id="fullscreen">Fullscreen</button></header>
 <main class="counter">
 <div class="eyebrow">WELCOME TO THE TABLE</div>
 <h1>Scan before your meal.</h1>
@@ -9,7 +9,7 @@
 <div class="counter-service" id="service-status">Checking meal service…</div>
 <p id="server-clock">All times Indian Standard Time</p>
 <p class="muted">One scan. One meal. A moment to recharge.</p>
-<a class="text-link" href="dashboard.php">← Back to dashboard</a>
+<a class="text-link" href="dashboard">← Back to dashboard</a>
 </main>
 <script src="<%= base %>/assets/vendor/qrcode.min.js"></script>
 <script defer src="<%= base %>/assets/js/counter.js"></script>

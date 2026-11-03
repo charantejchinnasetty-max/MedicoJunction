@@ -4,7 +4,7 @@
 -%>
 <%- include('../partials/page-start', { title: 'Attendance', active: 'attendance', full: false }) %>
 <%- include('../partials/notice') %>
-<%- include('../partials/heading', { eyebrow: 'ATTENDANCE', heading: 'Every meal, accounted for.', description: 'Verified scans and recorded corrections in one reliable register.', actions: '<a class="button" href="reports.php?' + e(qs({ ...f, view: 'detail' })) + '">' + icon('reports') + ' Export / print</a><a class="button primary" href="?correct=new">+ Add missed meal</a>' }) %>
+<%- include('../partials/heading', { eyebrow: 'ATTENDANCE', heading: 'Every meal, accounted for.', description: 'Verified scans and recorded corrections in one reliable register.', actions: '<a class="button" href="reports?' + e(qs({ ...f, view: 'detail' })) + '">' + icon('reports') + ' Export / print</a><a class="button primary" href="?correct=new">+ Add missed meal</a>' }) %>
 <%_ if (form) { const r = form.record; const v = form.values; _%>
 <section class="panel form-panel"><h2><%= r ? 'Correct attendance #' + form.id : 'Add missed attendance' %></h2><p>Every change requires a reason and is permanently logged. Removing attendance voids the entry and preserves its history.</p>
 <form method="post"><%- include('../partials/csrf') %><input type="hidden" name="id" value="<%= form.id %>">
@@ -23,7 +23,7 @@
 <label>Action<select name="action"><option value="save"><%= r ? 'Save correction / restore' : 'Add attendance' %></option><%- r ? '<option value="void">Remove invalid attendance (void)</option>' : '' %></select></label>
 <label class="wide">Reason for modification<textarea name="reason" required minlength="8" maxlength="500" placeholder="Explain why this correction is necessary"><%= v.reason ?? '' %></textarea></label>
 </div>
-<div class="actions"><button class="button primary" data-confirm="Save this attendance correction and its audit trail?">Save correction</button><a class="button" href="attendance.php">Cancel</a></div>
+<div class="actions"><button class="button primary" data-confirm="Save this attendance correction and its audit trail?">Save correction</button><a class="button" href="attendance">Cancel</a></div>
 </form></section>
 <%_ } _%>
 <%- include('../partials/filter-form', { admin: true, view: '' }) %>

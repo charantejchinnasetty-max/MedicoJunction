@@ -19,6 +19,25 @@ function guardAssets(req, res, next) {
   next();
 }
 
+/**
+ * Old addresses from the PHP version (/admin/employees.php, /login.php, /index.php …).
+ * Pages redirect permanently to the clean address; API calls and form posts are served
+ * directly so cached pages and the counter screen keep working during the switch-over.
+ */
+function legacyPhpUrls(req, res, next) {
+  const m = /^(.*?)\.+php$/i.exec(req.path);
+  if (!m) return next();
+  let clean = m[1];
+  if (clean === '' || clean === '/' || clean === '/index') clean = '/';
+  const i = req.url.indexOf('?');
+  const query = i === -1 ? '' : req.url.slice(i);
+  if ((req.method === 'GET' || req.method === 'HEAD') && !clean.startsWith('/api/')) {
+    return res.redirect(301, `${env.basePath}${clean}${query}`);
+  }
+  req.url = clean + query;
+  next();
+}
+
 function createApp() {
   const app = express();
   app.disable('x-powered-by');
@@ -33,6 +52,7 @@ function createApp() {
   // Static frontend (CSS, JS, images, vendor libraries, uploads) — unchanged files.
   app.use(`${env.basePath}/assets`, guardAssets, express.static(ASSETS, { index: false, dotfiles: 'deny', fallthrough: false, maxAge: env.isProd ? '1h' : 0 }));
 
+  app.use(mount, legacyPhpUrls);
   app.use(mount, noStore);
   app.use(mount, express.urlencoded({ extended: false, limit: '100kb', parameterLimit: 200 }));
   app.use(mount, sessionMiddleware);

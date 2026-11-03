@@ -1,7 +1,7 @@
 <%# Locals: f, view, counts, detailRows | summary { list, grand, amount, missing, cols } -%>
 <%- include('../partials/page-start', { title: 'Reports & expenses', active: 'reports', full: false }) %>
 <%- include('../partials/notice') %>
-<%- include('../partials/heading', { eyebrow: 'REPORTS & INSIGHTS', heading: 'The whole picture, down to a meal.', description: 'Daily, monthly, employee, and meal-wise reports from verified records.', actions: '<a class="button" href="export_report.php?' + e(qs({ ...f, view })) + '">Export CSV</a><button class="button primary" id="print-report">Print report</button>' }) %>
+<%- include('../partials/heading', { eyebrow: 'REPORTS & INSIGHTS', heading: 'The whole picture, down to a meal.', description: 'Daily, monthly, employee, and meal-wise reports from verified records.', actions: '<a class="button" href="export_report?' + e(qs({ ...f, view })) + '">Export CSV</a><button class="button primary" id="print-report">Print report</button>' }) %>
 <%- include('../partials/filter-form', { admin: true, view }) %>
 <%- include('../partials/cards', { counts, employees: null }) %>
 <div class="tabs"><a class="<%= view === 'summary' ? 'selected' : '' %>" href="?<%= qs({ ...f, view: 'summary' }) %>">Employee summary</a><a class="<%= view === 'detail' ? 'selected' : '' %>" href="?<%= qs({ ...f, view: 'detail' }) %>">Detailed register</a></div>

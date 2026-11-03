@@ -10,11 +10,11 @@ test.before(async () => { app = await startApp(); admin = await app.admin(); });
 test.after(() => app.stop());
 
 const base = { id: '0', employee_name: 'Dev Patel', employee_code: 'EMP010', mobile: '+91 99887 76655', department: 'Housekeeping', designation: 'Supervisor', joining_date: '2025-05-01', active: 'on' };
-const save = async (fields) => { await admin.req('/admin/employees.php?edit=new'); return admin.post('/admin/employees.php', fields); };
+const save = async (fields) => { await admin.req('/admin/employees?edit=new'); return admin.post('/admin/employees', fields); };
 
 test('create employee: normalised mobile, new department, common password, audit', async () => {
   const r = await save(base);
-  assert.equal(r.location, '/admin/employees.php');
+  assert.equal(r.location, '/admin/employees');
   const e = await app.db.one("SELECT * FROM employees WHERE employee_code='EMP010'");
   assert.equal(e.mobile, '9988776655');
   assert.equal(e.mobile_login, '9988776655');
@@ -24,10 +24,10 @@ test('create employee: normalised mobile, new department, common password, audit
   assert.ok(actions.includes('employee_created') && actions.includes('employee_password_reset'));
   const created = await app.db.one("SELECT old_value,new_value FROM audit_logs WHERE action='employee_created'");
   assert.doesNotMatch(created.new_value + created.old_value, /password/);
-  assert.match((await admin.req('/admin/employees.php')).text, /Employee saved\. Attendance history is preserved\./);
+  assert.match((await admin.req('/admin/employees')).text, /Employee saved\. Attendance history is preserved\./);
   // The new employee can log in with the common password.
   const emp = app.browser();
-  assert.equal((await emp.login('employee', '9988776655', 'Staff@12345')).location, '/employee/dashboard.php');
+  assert.equal((await emp.login('employee', '9988776655', 'Staff@12345')).location, '/employee/dashboard');
 });
 
 test('duplicate employee code and duplicate mobile are rejected', async () => {
@@ -48,32 +48,32 @@ test('validation: mobile, date, required fields, lengths', async () => {
 test('edit employee and reset password ends their sessions', async () => {
   const emp = await app.employee('9988776655');
   const id = (await app.db.one("SELECT id FROM employees WHERE employee_code='EMP010'")).id;
-  await admin.req(`/admin/employees.php?edit=${id}`);
-  const r = await admin.post('/admin/employees.php', { ...base, id: String(id), designation: 'Head Supervisor', reset_password: 'on' });
+  await admin.req(`/admin/employees?edit=${id}`);
+  const r = await admin.post('/admin/employees', { ...base, id: String(id), designation: 'Head Supervisor', reset_password: 'on' });
   assert.equal(r.status, 302);
   assert.equal((await app.db.one('SELECT designation d FROM employees WHERE id=?', [id])).d, 'Head Supervisor');
-  assert.equal((await emp.req('/employee/dashboard.php')).location, '/login.php');
+  assert.equal((await emp.req('/employee/dashboard')).location, '/login');
 });
 
 test('view employee page', async () => {
-  const r = await admin.req('/admin/employee-view.php?id=1');
+  const r = await admin.req('/admin/employee-view?id=1');
   assert.match(r.text, /EMPLOYEE PROFILE/);
   assert.match(r.text, /Asha Rao/);
-  assert.match((await admin.req('/admin/employee-view.php?id=9999')).text, /Employee not found\./);
+  assert.match((await admin.req('/admin/employee-view?id=9999')).text, /Employee not found\./);
 });
 
 test('soft delete keeps attendance; restore returns the employee as inactive', async () => {
   await app.db.query("INSERT INTO meal_attendance(employee_id,meal_type_id,meal_date,source,status) VALUES(1,1,'2026-10-01','manual','valid')");
-  await admin.req('/admin/employees.php');
-  let r = await admin.post('/admin/employees.php', { id: '1', action: 'delete' });
-  assert.equal(r.location, '/admin/employees.php');
+  await admin.req('/admin/employees');
+  let r = await admin.post('/admin/employees', { id: '1', action: 'delete' });
+  assert.equal(r.location, '/admin/employees');
   let e = await app.db.one('SELECT * FROM employees WHERE id=1');
   assert.ok(e.deleted_at);
   assert.equal(Number((await app.db.one('SELECT COUNT(*) n FROM meal_attendance WHERE employee_id=1')).n), 1);
-  assert.match((await admin.req('/admin/employees.php?status=deleted')).text, /Asha Rao/);
-  assert.match((await admin.post('/admin/employees.php', { ...base, id: '1', employee_code: 'EMP001', mobile: '9876543210' })).text, /Restore this deleted employee before editing their profile\./);
-  r = await admin.post('/admin/employees.php', { id: '1', action: 'restore' });
-  assert.equal(r.location, '/admin/employees.php?status=0');
+  assert.match((await admin.req('/admin/employees?status=deleted')).text, /Asha Rao/);
+  assert.match((await admin.post('/admin/employees', { ...base, id: '1', employee_code: 'EMP001', mobile: '9876543210' })).text, /Restore this deleted employee before editing their profile\./);
+  r = await admin.post('/admin/employees', { id: '1', action: 'restore' });
+  assert.equal(r.location, '/admin/employees?status=0');
   e = await app.db.one('SELECT * FROM employees WHERE id=1');
   assert.equal(e.deleted_at, null);
   assert.equal(Number(e.active), 0);
@@ -84,11 +84,11 @@ test('soft delete keeps attendance; restore returns the employee as inactive', a
 test('employee photo upload: valid image stored as PNG; invalid rejected', async () => {
   const jpg = await sharp({ create: { width: 40, height: 40, channels: 3, background: '#a52' } }).jpeg().toBuffer();
   const post = async (buf, name, type) => {
-    await admin.req('/admin/employees.php?edit=1');
+    await admin.req('/admin/employees?edit=1');
     const fd = new FormData();
     for (const [k, v] of Object.entries({ csrf: admin.csrf, id: '1', employee_name: 'Asha Rao', employee_code: 'EMP001', mobile: '9876543210', active: 'on' })) fd.append(k, v);
     fd.append('photo', new Blob([buf], { type }), name);
-    return admin.req('/admin/employees.php', { method: 'POST', multipart: fd });
+    return admin.req('/admin/employees', { method: 'POST', multipart: fd });
   };
   assert.equal((await post(jpg, '../../x.jpg', 'image/jpeg')).status, 302);
   assert.match((await app.db.one('SELECT photo FROM employees WHERE id=1')).photo, /^assets\/uploads\/[a-f0-9]{32}\.png$/);
@@ -97,7 +97,7 @@ test('employee photo upload: valid image stored as PNG; invalid rejected', async
 });
 
 test('employee CSV export', async () => {
-  const r = await admin.req('/admin/export_employees.php');
+  const r = await admin.req('/admin/export_employees');
   assert.match(r.headers.get('content-disposition'), /employees\.csv/);
   assert.match(r.text, /^Name,"Employee ID",Department,Designation,Status\n/);
 });

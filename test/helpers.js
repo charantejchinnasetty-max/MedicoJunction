@@ -72,8 +72,8 @@ class Browser {
   }
   post(p, fields = {}) { return this.req(p, { method: 'POST', form: { csrf: this.csrf, ...fields } }); }
   async login(role, username, password) {
-    await this.req('/login.php');
-    return this.post('/login.php', { role, username, password });
+    await this.req('/login');
+    return this.post('/login', { role, username, password });
   }
 }
 
