@@ -114,7 +114,7 @@ The `/mess_management` prefix is now configurable with `BASE_PATH`.
   were run against identical copies of the same migrated database. Every admin and employee
   page, every validation-error page, both CSV exports and all four JSON APIs were fetched from
   both and compared byte-for-byte (only per-session CSRF tokens and equivalent HTML entity
-  spellings normalised): **identical**. The same sequence of 47 write actions (employee
+  spellings normalised): **identical**. The same sequence of 46 write actions (employee
   create/edit/reset/deactivate/delete/restore, attendance add/correct/void/restore, meal
   timings, settings, rates, QR issue + scans, logout) was then run against both, and the
   resulting rows in `employees`, `departments`, `meal_attendance`, `meal_types`,
