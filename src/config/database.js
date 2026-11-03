@@ -16,6 +16,8 @@ const pool = mysql.createPool({
   dateStrings: true,
   timezone: '+05:30',
   supportBigNumbers: true,
+  ...(env.db.ssl ? { ssl: env.db.ssl } : {}),
+  enableKeepAlive: true,
 });
 
 // Same as the PHP bootstrap: SET time_zone = '+05:30' on every connection.

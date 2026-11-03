@@ -8,3 +8,7 @@ npm-debug.log*
 coverage/
 storage/*
 !storage/.gitkeep
+public/
+.vercel/
+.env.vercel
+*.pem

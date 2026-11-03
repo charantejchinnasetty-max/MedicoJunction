@@ -44,6 +44,8 @@ Edit `.env`:
 | `QR_SECRET` | Optional QR signing key (64 hex chars). If empty, `storage/qr.key` is used |
 | `TRUST_PROXY` | Set to `1` when running behind a reverse proxy that terminates HTTPS |
 | `COOKIE_SECURE` | Secure cookies; defaults to `true` in production |
+| `DB_SSL`, `DB_SSL_CA` | TLS for hosted MySQL; `DB_SSL_CA` is the CA certificate text or a `.pem` file path |
+| `UPLOAD_STORAGE` | `disk` (default) or `database` (default on Vercel) |
 
 `.env` is git-ignored. Never commit it.
 
@@ -121,6 +123,67 @@ location / {
 }
 ```
 
+## Deploy to Vercel
+
+The repository is ready for Vercel: `vercel.json` runs the Express app as one serverless
+function (`api/index.js`), and the build step (`npm run vercel-build`) copies `assets/` to
+`public/assets` so Vercel's CDN serves the CSS, JavaScript and images.
+
+### 1. A MySQL database on the internet
+
+Vercel cannot reach the MySQL on your own computer (XAMPP). Create a hosted MySQL database,
+for example the free MySQL plan on [Aiven](https://aiven.io/free-mysql-database) (choose a
+region close to India if offered). Note its host, port, user, password and database name,
+and download its **CA certificate** (`ca.pem`).
+
+Copy your existing data into it from your computer:
+
+1. Export the database from phpMyAdmin (XAMPP → `mess_management` → Export → SQL) as
+   `mess_management.sql`.
+2. Create `.env.vercel` next to `.env` (it is git-ignored) with the hosted database:
+   ```ini
+   DB_HOST=<host>
+   DB_PORT=<port>
+   DB_NAME=<database, e.g. defaultdb>
+   DB_USER=<user>
+   DB_PASSWORD=<password>
+   DB_SSL=true
+   DB_SSL_CA=ca.pem
+   ```
+3. Run:
+   ```bash
+   node --env-file=.env.vercel scripts/import-sql.js mess_management.sql
+   node --env-file=.env.vercel scripts/migrate.js
+   ```
+
+### 2. The Vercel project
+
+1. On [vercel.com](https://vercel.com) choose **Add New → Project**, import this GitHub
+   repository and keep the detected settings (they come from `vercel.json`).
+2. Under **Environment Variables** add:
+
+   | Name | Value |
+   |---|---|
+   | `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | the hosted database |
+   | `DB_SSL` | `true` |
+   | `DB_SSL_CA` | the full text of `ca.pem` (from `-----BEGIN CERTIFICATE-----` to the end) |
+   | `SESSION_SECRET` | a long random string (see [Environment](#environment)) |
+   | `QR_SECRET` | 64 random hex characters: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+
+   Leave `BASE_PATH` unset.
+3. **Deploy.** Open the `https://<project>.vercel.app` address — it is HTTPS, so phone
+   cameras can scan the counter QR.
+
+If a page shows *Configuration error: …*, add or fix the variable it names and redeploy.
+
+### How it differs from running on your own server
+
+* **Uploads** (logo, profile photos) are stored in the database table `uploaded_files`
+  because Vercel's disk is read-only. They are scaled to at most 1200 × 1200 px.
+  (Set `UPLOAD_STORAGE=database` to use the same storage on any server.)
+* **Login rate limits** are counted per function instance.
+* Functions run in Mumbai (`bom1`, set in `vercel.json`); keep the database nearby for speed.
+
 ## Testing and linting
 
 ```bash
@@ -136,7 +199,8 @@ The integration tests create and **drop** a database named by `TEST_DB_NAME`
 ```
 assets/            Frontend: CSS, JS, images, vendor libraries, uploads (unchanged)
 database/          schema.sql (new installs), upgrade.sql (migration)
-scripts/           migrate, create-admin, set-employee-password
+api/index.js       Vercel entry point (vercel.json)
+scripts/           migrate, create-admin, set-employee-password, import-sql, vercel-build
 src/
   config/          environment and MySQL pool
   middleware/      security headers, sessions, CSRF, auth, rate limits, uploads, errors

@@ -9,6 +9,7 @@ const db = require('../src/config/database');
 const { hashPassword, isBcrypt } = require('../src/services/passwords');
 const { normalizeMobile, isIndianMobile } = require('../src/utils/validation');
 const { store } = require('../src/middleware/session');
+const { ensureUploadTable } = require('../src/services/images');
 
 const keepOrHash = async (value) => (isBcrypt(value) ? value : hashPassword(value));
 
@@ -20,6 +21,7 @@ async function main() {
   const sql = fs.readFileSync(path.join(env.ROOT, 'database', 'upgrade.sql'), 'utf8');
   for (const statement of sql.split(';')) if (statement.trim()) await db.pool.query(statement);
   await store.init(); // sessions table
+  await ensureUploadTable(); // uploads stored in the database (Vercel)
 
   const keyFile = path.join(env.ROOT, 'storage', 'qr.key');
   if (!env.qrSecret && !fs.existsSync(keyFile)) {
