@@ -26,6 +26,10 @@ async function saveUploadedImage(req) {
   } catch {
     meta = null;
   }
+  // A real JPEG/PNG signature that cannot be parsed is a damaged image (PHP: GD decode failure).
+  const signature = file.buffer.subarray(0, 8);
+  const looksLikeImage = signature.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff])) || signature.equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  if (!meta && looksLikeImage) throw new ValidationError('The image could not be read.');
   if (!meta || !['jpeg', 'png'].includes(meta.format) || !meta.width || !meta.height || meta.width > MAX_SIDE || meta.height > MAX_SIDE) {
     throw new ValidationError('Choose a JPG or PNG image up to 3000 × 3000 pixels.');
   }

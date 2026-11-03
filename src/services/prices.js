@@ -17,7 +17,8 @@ async function saveRates(req) {
   const values = RATE_FIELDS.map((k) => {
     const v = str(body[k]) ?? '';
     if (!isNumeric(v) || Number(v) < 0 || Number(v) > 999999) throw new ValidationError('Enter non-negative meal rates below ₹999,999.');
-    return Math.round(Number(v) * 100) / 100;
+    // PHP round($v, 2) pre-rounds to 15 significant digits, so 60.555 → 60.56 (not 60.55).
+    return Math.round(Number((Number(v) * 100).toPrecision(15))) / 100;
   });
   await db.withTransaction(async (conn) => {
     const old = await db.rows('SELECT * FROM meal_prices WHERE month_year=?', [month], conn);

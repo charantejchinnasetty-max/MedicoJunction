@@ -45,7 +45,7 @@ const helpers = {
  * Render a page. Template line breaks between tags exist only for readability; they are
  * removed so the DOM matches the single-line markup the PHP helpers produced.
  */
-function render(req, res, view, locals = {}, status = 200) {
+function render(req, res, view, locals = {}, status = res.statusCode || 200) {
   const flash = req.session && req.session.flash;
   if (flash !== undefined) delete req.session.flash;
   res.render(view, { flash, error: '', ...locals }, (err, html) => {
