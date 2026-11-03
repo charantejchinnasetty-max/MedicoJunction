@@ -1,0 +1,16 @@
+<%# Locals: month ("YYYY-MM"), rates (row or null) -%>
+<%- include('../partials/page-start', { title: 'Meal rates', active: 'rates', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'MEAL RATES', heading: 'Simple, transparent meal costs.', description: 'Monthly rates are applied to attendance for the same month.', actions: '' }) %>
+<section class="panel form-panel">
+<form method="get" class="inline-filter"><label>View month<input type="month" name="month" required value="<%= month %>"></label><button class="button">Load month</button></form>
+<form method="post"><%- include('../partials/csrf') %><input type="hidden" name="month" value="<%= month %>">
+<h2>Rates for <%= fmt(month + '-01', 'F Y') %></h2>
+<div class="form-grid">
+<%_ for (const [k, label] of [['breakfast_rate', 'Breakfast'], ['lunch_rate', 'Lunch'], ['dinner_rate', 'Dinner']]) { _%>
+<label><%= label %> · INR<input type="number" name="<%= k %>" step="0.01" min="0" max="999999" required value="<%= rates ? rates[k] : '' %>"></label>
+<%_ } _%>
+</div>
+<button class="button primary">Save monthly rates</button>
+</form></section>
+<%- include('../partials/page-end') %>

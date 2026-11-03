@@ -1,0 +1,8 @@
+<%# PHP cards($counts, $employees). Locals: counts, employees (number or null) -%>
+<%_ const total = counts.reduce((s, r) => s + r.count, 0); const emp = typeof employees === 'number' ? employees : null; _%>
+<div class="stats-grid">
+<%_ counts.forEach((r, i) => { _%>
+<article class="stat-card tone-<%= i % 3 %>"><div class="stat-top"><span><%= r.name %></span><span class="stat-icon"><%- icon(i === 2 ? 'clock' : 'sun') %></span></div><div class="stat-value" data-stat="<%= r.id %>"><%= r.count %></div><div class="stat-sub">Meals recorded<%= emp !== null ? ' · ' + (emp ? Math.round(100 * r.count / emp) : 0) + '% of active employees' : '' %></div></article>
+<%_ }) _%>
+<article class="stat-card total"><div class="stat-top"><span>Total meals</span><span class="stat-icon"><%- icon('attendance') %></span></div><div class="stat-value" data-stat="total"><%= total %></div><div class="stat-sub">A little care in every meal</div></article>
+</div>

@@ -1,0 +1,16 @@
+<%# Locals: list (each with `details` pretty JSON), page -%>
+<%- include('../partials/page-start', { title: 'Activity log', active: 'audit', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'ACCOUNTABILITY', heading: 'A clear trail of every change.', description: 'Administrative actions, report exports, and attendance corrections.', actions: '' }) %>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Time · IST</th><th>Admin</th><th>Action</th><th>Reason / details</th></tr></thead>
+<tbody>
+<%_ for (const r of list) { _%>
+<tr><td><%= r.created_at %></td><td><%= r.admin_name ?? 'System' %></td><td><%= r.action.replace(/_/g, ' ') %></td><td><%= r.reason %><details><summary>View before / after</summary><pre><%= r.details %></pre></details></td></tr>
+<%_ } _%>
+<%_ if (!list.length) { _%>
+<tr><td colspan="4" class="empty">No activity has been recorded yet.</td></tr>
+<%_ } _%>
+</tbody></table></div>
+<div class="pagination"><span>Page <%= page %></span><div><%- page > 1 ? '<a class="button" href="?page=' + (page - 1) + '">Previous</a>' : '' %><%- list.length === 50 ? '<a class="button" href="?page=' + (page + 1) + '">Next</a>' : '' %></div></div>
+</section>
+<%- include('../partials/page-end') %>

@@ -1,0 +1,44 @@
+<%#
+  PHP pageStart($title, $active, $user, $role, $full).
+  Locals: title, active, user, role, full, settings, csrfToken, flash
+-%>
+<%_
+  const company = settings.company_name || 'Medico Junction';
+  const displayName = role === 'admin' ? user.name : user.employee_name;
+  const nav = role === 'admin'
+    ? [['dashboard', 'Overview', 'dashboard.php', 'dashboard'], ['attendance', 'Attendance', 'attendance.php', 'attendance'], ['employees', 'Employees', 'employees.php', 'employees'], ['reports', 'Reports & expenses', 'reports.php', 'reports'], ['qr', 'Counter QR', 'meal-qr.php', 'qr'], ['meals', 'Meal timings', 'meal-settings.php', 'clock'], ['rates', 'Meal rates', 'meal_prices.php', 'reports'], ['settings', 'Settings', 'settings.php', 'settings'], ['audit', 'Activity log', 'audit.php', 'clock']]
+    : [['dashboard', 'My dashboard', 'dashboard.php', 'dashboard'], ['scan', 'Scan meal QR', 'scan.php', 'qr'], ['history', 'My meal history', 'history.php', 'attendance'], ['profile', 'My profile', 'profile.php', 'employees']];
+_%>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="csrf-token" content="<%= csrfToken %>">
+<title><%= title %> · <%= company %></title>
+<link rel="icon" href="<%= base %>/assets/logo/medico.svg">
+<link rel="stylesheet" href="<%= base %>/assets/css/medico.css">
+<script defer src="<%= base %>/assets/js/medico.js"></script>
+</head>
+<body data-base="<%= base %>"<%- full ? ' class="counter-body"' : '' %>>
+<%_ if (!full) { _%>
+<aside class="sidebar" id="sidebar">
+<a class="brand" href="<%= base %>/<%= role %>/dashboard.php"><%- include('logo') %><span><%= company %><small>MEALS · CARE · COMMUNITY</small></span></a>
+<div class="nav-label"><%= role === 'admin' ? 'WORKSPACE' : 'EMPLOYEE PORTAL' %></div>
+<nav aria-label="Main navigation">
+<%_ for (const [key, label, href, ic] of nav) { _%>
+<a <%- key === active ? 'aria-current="page" class="active"' : '' %> href="<%= base %>/<%= role %>/<%= href %>"><%- icon(ic) %><span><%= label %></span></a>
+<%_ } _%>
+</nav>
+<div class="sidebar-bottom">
+<div class="care-note">Good meals.<br>Better workdays.<span>A little care, every day.</span></div>
+<div class="user-mini"><span class="avatar"><%= initial(displayName) %></span><div><strong><%= displayName %></strong><small><%= ucfirst(role) %></small></div><form action="<%= base %>/logout.php" method="post"><%- include('csrf') %><button class="logout" title="Log out" aria-label="Log out">↗</button></form></div>
+</div>
+</aside>
+<div class="app-shell">
+<header class="topbar"><button class="menu-button" id="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button><div class="breadcrumb">Workspace <span>/</span> <strong><%= title %></strong></div><div class="topbar-right"><span class="pill soft"><%= role === 'admin' ? 'Admin workspace' : 'Employee portal' %></span><span><%= fmt(now(), 'D, d M Y') %></span></div></header>
+<main id="main">
+<%_ if (flash) { _%>
+<div role="status" class="notice success"><%= flash %></div>
+<%_ } _%>
+<%_ } _%>

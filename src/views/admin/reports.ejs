@@ -1,0 +1,28 @@
+<%# Locals: f, view, counts, detailRows | summary { list, grand, amount, missing, cols } -%>
+<%- include('../partials/page-start', { title: 'Reports & expenses', active: 'reports', full: false }) %>
+<%- include('../partials/notice') %>
+<%- include('../partials/heading', { eyebrow: 'REPORTS & INSIGHTS', heading: 'The whole picture, down to a meal.', description: 'Daily, monthly, employee, and meal-wise reports from verified records.', actions: '<a class="button" href="export_report.php?' + e(qs({ ...f, view })) + '">Export CSV</a><button class="button primary" id="print-report">Print report</button>' }) %>
+<%- include('../partials/filter-form', { admin: true, view }) %>
+<%- include('../partials/cards', { counts, employees: null }) %>
+<div class="tabs"><a class="<%= view === 'summary' ? 'selected' : '' %>" href="?<%= qs({ ...f, view: 'summary' }) %>">Employee summary</a><a class="<%= view === 'detail' ? 'selected' : '' %>" href="?<%= qs({ ...f, view: 'detail' }) %>">Detailed register</a></div>
+<section class="panel"><div class="panel-heading"><div><h2><%= view === 'summary' ? 'Employee meal summary' : 'Meal attendance details' %></h2><p><%= settings.company_name || '' %> · <%= f.from %> to <%= f.to %></p></div></div>
+<%_ if (view === 'detail') { _%>
+<%- include('../partials/attendance-table', { records: detailRows, correct: false, offset: 0 }) %>
+<%_ } else { _%>
+<div class="table-wrap"><table><thead><tr><th>Employee</th><%_ for (const m of meals) { _%><th><%= m.meal_name %></th><%_ } _%><th>Total meals</th><th>Amount · INR</th></tr></thead>
+<tbody>
+<%_ for (const r of summary.list) { _%>
+<tr><td><strong><%= r.employee_name %></strong><small class="source"><%= r.employee_code %></small></td><%_ for (const m of meals) { _%><td><%= r.counts[m.id] || 0 %></td><%_ } _%><td><strong><%= r.total %></strong></td><td>₹<%= money(r.amount) %><%= r.missing_rates ? ' *' : '' %></td></tr>
+<%_ } _%>
+<%_ if (!summary.list.length) { _%>
+<tr><td colspan="6" class="empty">No employees match these filters.</td></tr>
+<%_ } _%>
+</tbody>
+<tfoot><tr><th>Total</th><%_ for (const m of meals) { _%><th><%= summary.cols[m.id] || 0 %></th><%_ } _%><th><%= summary.grand %></th><th>₹<%= money(summary.amount) %></th></tr></tfoot>
+</table></div>
+<%_ if (summary.missing) { _%>
+<p class="report-note">* <%= summary.missing %> meals have no rate configured for their month. Their cost is excluded. Set monthly meal rates for a complete expense total.</p>
+<%_ } _%>
+<%_ } _%>
+</section>
+<%- include('../partials/page-end') %>

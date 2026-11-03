@@ -1,0 +1,34 @@
+<%# PHP app/login-page.php. Locals: error, form { role, username } -%>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Welcome · Medico Junction</title>
+<link rel="stylesheet" href="<%= base %>/assets/css/medico.css">
+<script defer src="<%= base %>/assets/js/medico.js"></script>
+</head>
+<body class="login-body" data-base="<%= base %>">
+<main class="login-layout">
+<section class="login-story">
+<div class="brand"><%- include('partials/logo') %><span><%= settings.company_name || '' %><small>MEALS · CARE · COMMUNITY</small></span></div>
+<div><div class="eyebrow">A PLACE AT THE TABLE</div><h1>Good food.<br>Good company.<br>Every day.</h1><p>Your daily meals, thoughtfully managed.<br>Log in, scan, and enjoy your meal.</p><div class="plate-art"><div>✦</div></div></div>
+<small>Made for the people who make a difference.</small>
+</section>
+<section class="login-form">
+<div class="eyebrow">WELCOME BACK</div>
+<h2>A little care starts here.</h2>
+<p>Sign in to your Medico Junction account.</p>
+<%- include('partials/notice') %>
+<form method="post"><%- include('partials/csrf') %>
+<label>Account type<select name="role"><option value="employee" <%= form.role === 'employee' ? 'selected' : '' %>>Employee</option><option value="admin" <%= form.role === 'admin' ? 'selected' : '' %>>Administrator</option></select></label>
+<label>Employee mobile number / Admin username<input name="username" autocomplete="username" required maxlength="50" value="<%= form.username %>" placeholder="Enter employee mobile number or admin username"></label>
+<label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="72" placeholder="Enter your password"></label>
+<button class="button primary full">Sign in <%- icon('arrow') %></button>
+</form>
+<p class="login-help">Need access? Your administrator can set up your account or reset your password.</p>
+<div class="secure-note"><%- icon('check') %> Secure sign-in · Server-verified attendance</div>
+</section>
+</main>
+</body>
+</html>
