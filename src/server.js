@@ -1,5 +1,11 @@
 'use strict';
-const env = require('./config/env'); // sets TZ=Asia/Kolkata first
+let env;
+try {
+  env = require('./config/env'); // sets TZ=Asia/Kolkata first
+} catch (err) {
+  console.error(`Configuration error: ${err.message}`);
+  process.exit(1);
+}
 const { pool } = require('./config/database');
 const { store } = require('./middleware/session');
 const { createApp } = require('./app');
