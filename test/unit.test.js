@@ -102,3 +102,11 @@ test('CSV output escapes formulas and quotes like fputcsv', () => {
   assert.ok(out.startsWith('﻿Employee,"Employee ID",Breakfast,Lunch,Dinner,"Total meals","Amount INR","Meals missing rates"\n'));
   assert.ok(out.includes("'=Bad,E1,2,0,0,2,60.00,0\n"));
 });
+
+test('database connection errors are recognised, query errors are not', () => {
+  const { isDbConnectionError } = require('../src/middleware/errors');
+  assert.equal(isDbConnectionError(Object.assign(new Error('x'), { code: 'ECONNREFUSED', fatal: true, syscall: 'connect' })), true);
+  assert.equal(isDbConnectionError(Object.assign(new Error('x'), { code: 'ER_ACCESS_DENIED_ERROR' })), true);
+  assert.equal(isDbConnectionError(Object.assign(new Error('x'), { code: 'ER_PARSE_ERROR' })), false);
+  assert.equal(isDbConnectionError(new Error('x')), false);
+});

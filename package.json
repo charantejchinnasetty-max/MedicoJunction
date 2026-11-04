@@ -2,15 +2,17 @@
   "name": "medico-junction",
   "version": "2.0.0",
   "private": true,
-  "description": "Medico Junction meal attendance — Node.js/Express backend with the original frontend",
+  "description": "Medico Junction meal attendance \u2014 Node.js/Express backend with the original frontend",
   "main": "src/server.js",
   "engines": {
-    "node": ">=20.19"
+    "node": ">=20.19 <25"
   },
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon --watch src --ext js,ejs src/server.js",
+    "vercel-build": "node scripts/vercel-build.js",
     "migrate": "node scripts/migrate.js",
+    "import-sql": "node scripts/import-sql.js",
     "create-admin": "node scripts/create-admin.js",
     "set-employee-password": "node scripts/set-employee-password.js",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",

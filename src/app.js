@@ -8,6 +8,7 @@ const { ensureCsrfToken } = require('./middleware/csrf');
 const { notFound, errorHandler } = require('./middleware/errors');
 const { helpers } = require('./utils/view');
 const routes = require('./routes');
+const { serveUploadedImage } = require('./services/images');
 
 const ASSETS = path.join(env.ROOT, 'assets');
 
@@ -49,7 +50,10 @@ function createApp() {
   app.use(securityHeaders);
 
   const mount = env.basePath || '/';
+  // Uploaded images kept in the database (Vercel); files on disk fall through to static below.
+  app.get(`${env.basePath}/assets/uploads/:file`, serveUploadedImage);
   // Static frontend (CSS, JS, images, vendor libraries, uploads) — unchanged files.
+  // On Vercel these are served by its CDN from public/assets (see scripts/vercel-build.js).
   app.use(`${env.basePath}/assets`, guardAssets, express.static(ASSETS, { index: false, dotfiles: 'deny', fallthrough: false, maxAge: env.isProd ? '1h' : 0 }));
 
   app.use(mount, legacyPhpUrls);

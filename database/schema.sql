@@ -163,6 +163,15 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   KEY `expires` (`expires`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Uploaded logo / profile photos when UPLOAD_STORAGE=database (the default on Vercel).
+CREATE TABLE IF NOT EXISTS `uploaded_files` (
+  `name` varchar(64) NOT NULL,
+  `mime` varchar(40) NOT NULL,
+  `data` longblob NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB;
+
 INSERT IGNORE INTO meal_types(id,meal_name,start_time,end_time,end_inclusive,status,display_order) VALUES (1,'Breakfast','06:00:00','11:00:00',0,1,1),(2,'Lunch','12:00:00','15:00:00',1,1,2),(3,'Dinner','19:00:00','23:30:00',1,1,3);
 INSERT IGNORE INTO system_settings VALUES ('company_name','Medico Junction'),('timezone','Asia/Kolkata'),('qr_ttl','60'),('logo','');
 INSERT IGNORE INTO schema_migrations(version) VALUES ('medico-v1');
